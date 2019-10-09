@@ -8,12 +8,16 @@ var Obstaculo = function (sprite, x, y, ancho, alto, potencia) {
   this.ancho = ancho;
   this.alto = alto;
   this.potencia = potencia;
+  this.ocultarse = function () {
+    this.x = -100;
+    this.y = -100;
+  }
 }
 //funcion por si el jugador choca con un obstaculo, quita vidas
 Obstaculo.prototype.chocar=function(jugador,potencia,obstaculo){
     jugador.perderVidas(potencia);
+    //flash
+    flash();
     //reduce la potencia del obstaculo a 0 despues de un choque 
-    obstaculo.potencia=0
-    
-};
- 
+    obstaculo.potencia=0;
+  }

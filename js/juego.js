@@ -16,6 +16,7 @@ var Juego = {
   vidasInicial: Jugador.vidas,
   // Indica si el jugador gano
   ganador: false,
+  estadoInstrucciones: 0,
 
   obstaculosCarretera: [
     /*Aca se van a agregar los obstaculos visibles. Tenemos una valla horizontal
@@ -79,6 +80,9 @@ Juego.iniciarRecursos = function() {
     'imagenes/mensaje_gameover.png',
     'imagenes/Splash.png',
     'imagenes/bache.png',
+    'imagenes/Mensaje0.png',
+    'imagenes/Mensaje1.png',
+    'imagenes/Mensaje2.png',
     'imagenes/tren_horizontal.png',
     'imagenes/tren_vertical.png',
     'imagenes/valla_horizontal.png',
@@ -108,7 +112,7 @@ Juego.comenzar = function() {
   /* El bucle principal del juego se llamara continuamente para actualizar
   los movimientos y el pintado de la pantalla. Sera el encargado de calcular los
   ataques, colisiones, etc*/
-  this.buclePrincipal();
+  this.mostrarInstrucciones();
 };
 
 Juego.buclePrincipal = function() {
@@ -215,10 +219,9 @@ Juego.calcularAtaques = function() {
     if (this.intersecan(enemigo, this.jugador, this.jugador.x, this.jugador.y)) {
       /* Si el enemigo colisiona debe empezar su ataque*/
       enemigo.comenzarAtaque(Jugador);
-      
     } else {
       /* Sino, debe dejar de atacar*/
-      enemigo.dejarDeAtacar(Jugador)
+      enemigo.dejarDeAtacar();
     }
   }, this);
 };
@@ -260,6 +263,10 @@ Juego.dibujarFondo = function() {
   if (this.terminoJuego()) {
     Dibujante.dibujarImagen('imagenes/mensaje_gameover.png', 0, 5, this.anchoCanvas, this.altoCanvas);
     document.getElementById('reiniciar').style.visibility = 'visible';
+ 
+     //Freeza los enemigos al perder
+     Juego.moverEnemigos = function() {/*NADA*/}
+    
   }
 
   // Si se gano el juego hay que mostrar el mensaje de ganoJuego de fondo
@@ -281,6 +288,30 @@ Juego.ganoJuego = function() {
 };
 
 Juego.iniciarRecursos();
+//Función que muestra todas las instrucciones y al final (estado 4) inicia el buclePrincipal
+Juego.mostrarInstrucciones=function() {
+
+  switch (this.estadoInstrucciones) {
+    case 0:
+        document.getElementById('continuar').style.visibility = 'visible';  
+        Dibujante.dibujarImagen('imagenes/Mensaje0.png', 0, 0, 961, 572);
+      break;
+    case 1:
+        Dibujante.dibujarImagen('imagenes/Mensaje1.png', 0, 0, 961, 572);
+      break;
+    case 2:
+        Dibujante.dibujarImagen('imagenes/Mensaje2.png', 0, 0, 961, 572);
+      break;
+    case 4:
+        document.getElementById('continuar').style.visibility = 'hidden';
+        
+        this.buclePrincipal();
+      break;
+    default:
+      break;
+  }
+  this.estadoInstrucciones++
+}
 
 // Activa las lecturas del teclado al presionar teclas
 // Documentacion: https://developer.mozilla.org/es/docs/Web/API/EventTarget/addEventListener
@@ -289,8 +320,37 @@ document.addEventListener('keydown', function(e) {
     37: 'izq',
     38: 'arriba',
     39: 'der',
-    40: 'abajo'
+    40: 'abajo',
+    32: 'space'
   };
 
   Juego.capturarMovimiento(allowedKeys[e.keyCode]);
+});
+
+//Función para ocultar todos los enemigos, por ejemplo, al ganar
+Juego.ocultarEnemigos=function() {
+  this.enemigos.forEach(function(enemigo){
+    enemigo.ocultarse();
+  },this)
+}
+
+Juego.ocultarObstaculos=function() {
+  this.obstaculosCarretera.forEach(function(obstaculo) {
+    obstaculo.ocultarse();
+  },this)
+}
+
+//Hago un flash en la pantalla
+function flash(){
+  $(".flash")
+  .show()  //show the hidden div
+  .animate({opacity: 0.5}, 10) 
+  .fadeOut(5)
+  .css({'opacity': 1});
+}
+
+
+
+$(document).ready(function() {    
+  $(".flash").hide();  
 });

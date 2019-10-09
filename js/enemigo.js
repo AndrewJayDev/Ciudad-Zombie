@@ -28,6 +28,8 @@ var Enemigo = function (sprite, x, y, ancho, alto, velocidad, rangoMov) {
 sacando una vida al jugador.*/
 Enemigo.prototype.atacar = function (jugador) {
   jugador.perderVidas(1);
+  //insert flash with fadein and fadeout 
+  flash();
 }
 
 /* Este metodo sirve para no estar atacando continuamente al jugador. Solo va a
@@ -45,3 +47,4 @@ Enemigo.prototype.dejarDeAtacar = function () {
   this.atacando = false;
   
 }
+
